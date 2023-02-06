@@ -1,0 +1,88 @@
+<button onclick="myFunctionH()">Hello</button>
+
+<button onclick="myFunctionW()">World</button>
+
+
+<div>post title: <span id="spanId"></span></div>
+<script>
+
+
+  //borrowed
+  async function* streamAsyncIterator(stream) {
+    // Get a lock on the stream
+    const reader = stream.getReader();
+
+    try {
+      while (true) {
+        // Read from the stream
+        const {done, value} = await reader.read();
+        // Exit if we're done
+        if (done) return;
+        // Else yield the chunk
+        yield value;
+      }
+    }
+    finally {
+      reader.releaseLock();
+    }
+  }
+
+  async function myFunctionH() {
+    let response = await fetch('http://10.5.0.5:9000?' + new URLSearchParams({
+      command: 'Hello',
+    }))
+    let stream = await response.body;
+    
+    const chunks = [];
+    const chunks2 = [];
+    for await (let chunk of streamAsyncIterator(stream)) {
+        chunks.push(chunk)
+    }
+    const buffer = chunks2.concat(chunks);
+    let text = buffer.toString("utf-16")
+    if (text == "72,101,108,108,111"){
+      document.getElementById("spanId").innerHTML = "Hello";
+    }
+    else {
+      document.getElementById("spanId").innerHTML = "Fail!";
+    }  
+  }
+
+  async function myFunctionW() {
+    let response = await fetch('http://10.5.0.5:9000?' + new URLSearchParams({
+      command: 'World',
+    }))
+    let stream = await response.body;
+    
+    const chunks = [];
+    const chunks2 = [];
+    for await (let chunk of streamAsyncIterator(stream)) {
+        chunks.push(chunk)
+    }
+    // let text = String.fromCharCode(...Array.from(chunks))
+    // document.getElementById("spanId").innerHTML = text;
+    const buffer = chunks2.concat(chunks);
+    let text = buffer.toString("utf-16")
+    if (text == "87,111,114,108,100"){
+      document.getElementById("spanId").innerHTML = "World";
+    }
+    else {
+      document.getElementById("spanId").innerHTML = "Fail!";
+    }
+  }
+    //Should be like this however it won't convert or process uint8arrays
+    
+    // async function myFunctionH() {
+    // let response = await fetch('http://10.5.0.5:9000?' + new URLSearchParams({
+    //   command: 'World',
+    // }))
+    // let stream = await response.body;
+    
+    // const chunks = [];
+    // const chunks2 = [];
+    // for await (let chunk of streamAsyncIterator(stream)) {
+    //     chunks.push(chunk)
+    // }
+    // let text = String.fromCharCode(...Array.from(chunks))
+    // document.getElementById("spanId").innerHTML = text;
+</script>

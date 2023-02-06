@@ -1,0 +1,77 @@
+version: "3.8"
+
+services:
+  dns-server:
+    container_name: microtest-dns
+    hostname: dns-server
+    build:
+      context: ./dns-server
+      dockerfile: ./Dockerfile
+    ports:
+      - "10000:53" 
+    networks:
+      test-net:
+        ipv4_address: 10.5.0.2   
+    restart: always
+    command: ["python3", "server.py"]
+
+  frontend:
+    container_name: microtest-frontend
+    hostname: frontend
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      test-net:
+        ipv4_address: 10.5.0.4
+    
+  broker:
+    container_name: microtest-broker
+    hostname: broker
+    restart: always
+    build:
+      context: ./broker
+      dockerfile: ./Dockerfile
+    ports:
+      - 9000:9000
+    networks:
+      test-net:
+        ipv4_address: 10.5.0.5
+    command: ["python3", "server.py"]
+
+  hello:
+    container_name: microtest-hello
+    restart: always
+    build:
+      context: ./hello
+      dockerfile: ./Dockerfile
+    ports:
+      - 9100:9100
+    networks:
+      test-net:
+        ipv4_address: 10.5.0.6
+    command: ["python3", "server.py"]
+
+  world:
+    container_name: microtest-world
+    restart: always
+    build:
+      context: ./world
+      dockerfile: ./Dockerfile
+    ports:
+      - 9200:9200
+    networks:
+      test-net:
+        ipv4_address: 10.5.0.7
+    command: ["python3", "server.py"]
+
+networks:
+  test-net: 
+    driver: bridge
+    ipam:
+        config:
+          - subnet: 10.5.0.0/16
+            gateway: 10.5.0.1
