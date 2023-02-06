@@ -1,4 +1,4 @@
-Wanted to Play around with connected containers in a basic enviorment, was limited by the the plain nginix client side javascript to static address
+Wanted to play around with connected containers in a basic enviorment, was limited by the the plain nginix client side javascript to static addresses.
 
 TODO: 
 1. Refactor Services
